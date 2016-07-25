@@ -2,9 +2,17 @@
 
 ## Clean Registry
 
+### Ruby script to remove tags
+
 - Require : curl
 
 Ruby script to keep only a specified number of tags history of all images into a registry, the others are untagged (only for Registry V1)
+
+### Shell script to clean files (from https://gist.github.com/kwk/c5443f2a1abcf0eb1eaa)
+
+- Require : jq
+
+Shell script to clean at an OS level, the images that are not anymore tagged by the registry (only for registry V1, who has not the delete image function from HTTP endpoint)
 
 ## Mirror Registry
 
@@ -21,6 +29,10 @@ Ruby script to move images from a registry, to another (only registry V1)
 ```bash
 ./clean-registry.rb -h example.com -n 5
 ```
+- Dry-run use :
+```bash
+./clean-registry.rb -h example.com -n 5 --dry
+```
 - With https :
 ```bash
 ./clean-registry.rb -h example.com -n 5 --ssl
@@ -35,6 +47,10 @@ Ruby script to move images from a registry, to another (only registry V1)
 - Default use :
 ```bash
 ./mirror-registry.rb --sourcehost example.com --destinationhost example.com
+```
+- Dry-run use :
+```bash
+./mirror-registry.rb --sourcehost example.com --destinationhost example.com --dry
 ```
 - With https :
 ```bash
