@@ -1,20 +1,20 @@
 #!/bin/ruby
-require 'net/http'
-require 'json'
 require 'optparse'
 
-require_relative 'Images.rb'
-require_relative 'RegistryV1ClientAPI.rb'
-require_relative 'Registry.rb'
+require_relative 'lib/Images.rb'
+require_relative 'lib/RegistryV1ClientAPI.rb'
+require_relative 'lib/Registry.rb'
 
 options = {}
 options[:ssl] = false
+options[:dry] = false
 OptionParser.new do |opts|
   opts.banner = "Usage: ./clean-registry.rb [options]"
 
   opts.on('-h', '--host HOST', 'Host') { |v| options[:host] = v }
   opts.on('-p', '--port PORT', 'Port') { |v| options[:port] = v }
   opts.on('--ssl', 'SSL') { options[:ssl] = true }
+  opts.on('--dry', 'Dry Run') { options[:dry] = true }
   opts.on('-n', '--numberToKeep NUMBER', 'Number of tags to keep') { |v| options[:numberToKeep] = v }
 
 end.parse!
@@ -33,12 +33,16 @@ else
   proto='http://'
 end
 
+if options[:dry]
+  puts "Launch in dry-run mode, the registry will not be cleaned"
+end
+
 baseUrl=proto+options[:host]+':'+options[:port].to_s+'/'
 maxVersion = options[:numberToKeep].to_i
 
 puts baseUrl
 
-def cleanRegistry(baseUrl,maxVersion)
+def cleanRegistry(baseUrl,maxVersion,dry)
 
   registry = Registry.new(baseUrl)
 
@@ -65,10 +69,12 @@ def cleanRegistry(baseUrl,maxVersion)
       imageTagsList.each { |imageTag|
         cmd="curl -XDELETE "+baseUrl+"v1/repositories/"+imageTag.name+"/tags/"+imageTag.tag
         puts "Command : "+cmd
-        %x`#{cmd}`
+        unless dry
+          %x`#{cmd}`
+        end
       }
     end
   }
 end
 
-cleanRegistry(baseUrl,maxVersion)
+cleanRegistry(baseUrl,maxVersion,options[:dry])

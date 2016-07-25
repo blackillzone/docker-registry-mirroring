@@ -1,14 +1,13 @@
 #!/bin/ruby
-require 'net/http'
-require 'json'
 require 'optparse'
 
-require_relative 'Images.rb'
-require_relative 'RegistryV1ClientAPI.rb'
-require_relative 'Registry.rb'
+require_relative 'lib/Images.rb'
+require_relative 'lib/RegistryV1ClientAPI.rb'
+require_relative 'lib/Registry.rb'
 
 options = {}
 options[:ssl] = false
+options[:dry] = false
 OptionParser.new do |opts|
   opts.banner = "Usage: ./mirror-registry.rb [options]"
 
@@ -17,6 +16,7 @@ OptionParser.new do |opts|
   opts.on('--destinationhost HOST', 'Destination host') { |v| options[:destination_host] = v }
   opts.on('--destinationport PORT', 'Destination port') { |v| options[:destination_port] = v }
   opts.on('--ssl', 'SSL') { options[:ssl] = true }
+  opts.on('--dry', 'Dry Run') { options[:dry] = true }
 
 end.parse!
 
@@ -37,6 +37,10 @@ if options[:ssl]
   proto='https://'
 else
   proto='http://'
+end
+
+if options[:dry]
+  puts "Launch in dry-run mode, the registry will not be migrated"
 end
 
 baseUrlOrigin=proto+options[:source_host]+':'+options[:source_port].to_s+'/'
@@ -62,20 +66,28 @@ def compareImages(imagesOrigin,imagesTarget)
 end
 
 #Migration part : pull image one by one -> tag with the new repo -> push in the new repo -> removing image to keep a clean local docker
-def pushImages(imagesToPush,baseUrlOrigin,dnsEntryOrigin)
+def pushImages(imagesToPush,baseUrlOrigin,dnsEntryOrigin,dry)
   imagesToPush.each { |imageTag|
     cmd="sudo docker pull "+dnsEntryOrigin+imageTag.name+":"+imageTag.tag
     puts "Command : "+cmd
-    %x`#{cmd}`
+    unless dry
+      %x`#{cmd}`
+    end
     cmd="sudo docker tag "+dnsEntryOrigin+imageTag.name+":"+imageTag.tag+" "+dnsEntryTarget+imageTag.name+":"+imageTag.tag
     puts "Command : "+cmd
-    %x`#{cmd}`
+    unless dry
+      %x`#{cmd}`
+    end
     cmd="sudo docker push "+dnsEntryTarget+imageTag.name+":"+imageTag.tag
     puts "Command : "+cmd
-    %x`#{cmd}`
+    unless dry
+      %x`#{cmd}`
+    end
     cmd="sudo docker rmi -f "+dnsEntryOrigin+imageTag.name+":"+imageTag.tag+" "+dnsEntryTarget+imageTag.name+":"+imageTag.tag
     puts "Command : "+cmd
-    %x`#{cmd}`
+    unless dry
+      %x`#{cmd}`
+    end
   }
 end
 
@@ -86,4 +98,4 @@ puts "imagesTarget numbers : "+imagesTarget.length.to_s
 puts "Images to push : "+pushList.length.to_s
 
 #Send an array of images to push to the second registry
-pushImages(pushList,options[:source_host],options[:destination_host])
+pushImages(pushList,options[:source_host],options[:destination_host],options[:dry])
