@@ -88,6 +88,9 @@ def pushImages(imagesToPush,baseUrlOrigin,dnsEntryOrigin,dry)
     unless dry
       %x`#{cmd}`
     end
+
+    imagesToPush.delete(imageTag)
+    puts "Images left : "+imagesToPush.length.to_s
   }
 end
 
