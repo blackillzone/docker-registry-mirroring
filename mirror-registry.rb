@@ -68,7 +68,7 @@ def compareImages(imagesOrigin,imagesTarget)
 end
 
 #Migration part : pull image one by one -> tag with the new repo -> push in the new repo -> removing image to keep a clean local docker
-def pushImages(imagesToPush,baseUrlOrigin,dnsEntryOrigin,dry)
+def pushImages(imagesToPush,dnsEntryOrigin,dnsEntryTarget,dry)
   imagesToPush.each { |imageTag|
     cmd="sudo docker pull "+dnsEntryOrigin+imageTag.name+":"+imageTag.tag
     puts "Command : "+cmd
