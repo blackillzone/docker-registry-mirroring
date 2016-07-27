@@ -14,6 +14,8 @@ Ruby script to keep only a specified number of tags history of all images into a
 
 Shell script to clean at an OS level, the images that are not anymore tagged by the registry (only for registry V1, who has not the delete image function from HTTP endpoint)
 
+There is one variable to change, it correspond to the physical path on your server, where the registry store his images, as folder (on OS level). Inside this folder, you'll find two folders : images and repositories.
+
 ## Mirror Registry
 
 - Require : docker-engine
