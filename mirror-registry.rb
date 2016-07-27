@@ -43,8 +43,10 @@ if options[:dry]
   puts "Launch in dry-run mode, the registry will not be migrated"
 end
 
-baseUrlOrigin=proto+options[:source_host]+':'+options[:source_port].to_s+'/'
-baseUrlTarget=proto+options[:destination_host]+':'+options[:destination_port].to_s+'/'
+dnsRegistryOrigin=options[:source_host]+':'+options[:source_port].to_s+'/'
+dnsRegistryTarget=options[:destination_host]+':'+options[:destination_port].to_s+'/'
+baseUrlOrigin=proto+dnsRegistryOrigin
+baseUrlTarget=proto+dnsRegistryTarget
 
 # Get all images from the first Registry
 registryOrigin=Registry.new(baseUrlOrigin)
@@ -101,4 +103,4 @@ puts "imagesTarget numbers : "+imagesTarget.length.to_s
 puts "Images to push : "+pushList.length.to_s
 
 #Send an array of images to push to the second registry
-pushImages(pushList,options[:source_host],options[:destination_host],options[:dry])
+pushImages(pushList,dnsRegistryOrigin,dnsRegistryTarget,options[:dry])
