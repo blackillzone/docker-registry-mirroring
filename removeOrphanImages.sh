@@ -9,7 +9,7 @@ fi
 set -eu
 shopt -s nullglob
 
-readonly base_dir=/var/lib/docker/newcat-docker-images-v17 #To be setted ! It coreespond to the path where the registry store his images
+readonly base_dir=/var/lib/docker/docker-registry #To be setted ! It coreespond to the path where the registry store his images
 readonly output_dir=$(mktemp -d -t trace-images-XXXX)
 readonly jq=$JQPATH
 
