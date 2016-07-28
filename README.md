@@ -20,7 +20,8 @@ There is one variable to change, it correspond to the physical path on your serv
 
 - Require : docker-engine
 
-Ruby script to move images from a registry, to another (only registry V1)
+Ruby script to move images from a registry, to another (only registry V1) => The private registries need to be added to the --insecure-registry (or the commands push/pull will fail)
+
 ++ Now check the differences between the registries, before to launch the migration process
 
 ## Usage
